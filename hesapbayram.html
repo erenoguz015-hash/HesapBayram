@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hesap Bayram - Çok Fonksiyonlu Hesap Makinesi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 400px;
+      margin: 30px auto;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    select, input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 18px;
+      border-radius: 5px;
+      border: 1px solid #aaa;
+      box-sizing: border-box;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 20px;
+      min-height: 30px;
+      background: #fff;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      white-space: pre-line;
+    }
+    label {
+      margin-top: 15px;
+      display: block;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Hesap Bayram</h1>
+
+  <label for="operation">Ýþlem Seçiniz:</label>
+  <select id="operation" onchange="updateInputs()">
+    <option value="1">Toplama</option>
+    <option value="2">Çýkarma</option>
+    <option value="3">Çarpma</option>
+    <option value="4">Bölme</option>
+    <option value="5">Karekök</option>
+    <option value="6">KM › Metre</option>
+    <option value="7">Ekran (inch) › cm</option>
+    <option value="8">Pi sayýsý</option>
+  </select>
+
+  <div id="inputFields">
+    <!-- Girdi alanlarý buraya gelecek -->
+  </div>
+
+  <button onclick="hesapla()">Hesapla</button>
+
+  <div id="result"></div>
+
+  <script>
+    const PI = 3.12; // Python kodundaki sabit aynen korundu
+
+    function createInput(id, placeholder = '', type='text') {
+      const input = document.createElement('input');
+      input.type = type;
+      input.id = id;
+      input.placeholder = placeholder;
+      return input;
+    }
+
+    function updateInputs() {
+      const op = document.getElementById('operation').value;
+      const container = document.getElementById('inputFields');
+      container.innerHTML = ''; // önceki inputlarý temizle
+
+      switch(op) {
+        case '1': // Toplama
+        case '2': // Çýkarma
+        case '3': // Çarpma
+        case '4': // Bölme
+          container.appendChild(createInput('num1', 'Birinci sayý'));
+          container.appendChild(createInput('num2', 'Ýkinci sayý'));
+          break;
+        case '5': // Karekök
+          container.appendChild(createInput('num', 'Sayý'));
+          break;
+        case '6': // KM -> Metre
+          container.appendChild(createInput('km', 'Kilometre'));
+          break;
+        case '7': // Ekran inch -> cm
+          container.appendChild(createInput('inch', 'Ekran boyutu (inch)'));
+          break;
+        case '8': // Pi sayýsý
+          // hiç input gerekmez
+          break;
+        default:
+          container.innerHTML = '';
+      }
+      document.getElementById('result').innerText = '';
+    }
+
+    function parseNumber(value) {
+      // Sadece rakam ve nokta al
+      const filtered = value.split('').filter(ch => (ch >= '0' && ch <= '9') || ch === '.').join('');
+      if (!filtered) return NaN;
+      return parseFloat(filtered);
+    }
+
+    function hesapla() {
+      const op = document.getElementById('operation').value;
+      const resultDiv = document.getElementById('result');
+
+      try {
+        switch(op) {
+          case '1': { // Toplama
+            const a = parseNumber(document.getElementById('num1').value);
+            const b = parseNumber(document.getElementById('num2').value);
+            if (isNaN(a) || isNaN(b)) throw "Geçerli iki sayý girin.";
+            resultDiv.innerText = `${a} + ${b} = ${a + b}`;
+            break;
+          }
+          case '2': { // Çýkarma
+            const a = parseNumber(document.getElementById('num1').value);
+            const b = parseNumber(document.getElementById('num2').value);
+            if (isNaN(a) || isNaN(b)) throw "Geçerli iki sayý girin.";
+            resultDiv.innerText = `${a} - ${b} = ${a - b}`;
+            break;
+          }
+          case '3': { // Çarpma
+            const a = parseNumber(document.getElementById('num1').value);
+            const b = parseNumber(document.getElementById('num2').value);
+            if (isNaN(a) || isNaN(b)) throw "Geçerli iki sayý girin.";
+            resultDiv.innerText = `${a} × ${b} = ${a * b}`;
+            break;
+          }
+          case '4': { // Bölme
+            const a = parseNumber(document.getElementById('num1').value);
+            const b = parseNumber(document.getElementById('num2').value);
+            if (isNaN(a) || isNaN(b)) throw "Geçerli iki sayý girin.";
+            if (b === 0) throw "Bölen 0 olamaz.";
+            resultDiv.innerText = `${a} ÷ ${b} = ${a / b}`;
+            break;
+          }
+          case '5': { // Karekök
+            const a = parseNumber(document.getElementById('num').value);
+            if (isNaN(a)) throw "Geçerli bir sayý girin.";
+            if (a < 0) throw "Negatif sayýlarýn karekökü alýnamaz.";
+            resultDiv.innerText = `?${a} = ${Math.sqrt(a).toFixed(4)}`;
+            break;
+          }
+          case '6': { // KM -> Metre
+            const km = parseNumber(document.getElementById('km').value);
+            if (isNaN(km)) throw "Geçerli bir sayý girin.";
+            resultDiv.innerText = `${km} km = ${km * 1000} metre`;
+            break;
+          }
+          case '7': { // Ekran inch -> cm
+            const inch = parseNumber(document.getElementById('inch').value);
+            if (isNaN(inch)) throw "Geçerli bir sayý girin.";
+            const cm = inch * 2.54;
+            resultDiv.innerText = `${inch} inch = ${cm.toFixed(2)} cm`;
+            break;
+          }
+          case '8': { // Pi sayýsý
+            resultDiv.innerText = `Pi sayýsý = ${PI}`;
+            break;
+          }
+          default:
+            resultDiv.innerText = "Geçersiz iþlem.";
+        }
+      } catch (e) {
+        resultDiv.innerText = `Hata: ${e}`;
+      }
+    }
+
+    // Sayfa açýlýr açýlmaz ilk inputlarý göster
+    updateInputs();
+  </script>
+
+</body>
+</html>
